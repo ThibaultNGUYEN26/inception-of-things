@@ -4,7 +4,8 @@ PROVIDER = libvirt
 
 ## Démarrer les VMs
 up:
-	$(VAGRANT_CMD) up --provider=$(PROVIDER)
+	$(VAGRANT_CMD) up rchboukiS --provider=$(PROVIDER)
+	$(VAGRANT_CMD) up rchboukiSW --provider=$(PROVIDER)
 
 status:
 	$(VAGRANT_CMD) status

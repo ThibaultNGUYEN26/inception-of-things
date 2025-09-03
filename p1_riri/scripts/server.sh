@@ -14,7 +14,7 @@ sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 sudo chown $(id -u):$(id -g) ~/.kube/config
 
 # --- Save node token to .env ---
-NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token)
+NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token | cut -d':' -f1)
 SHARED_FOLDER="/home/vagrant/p1"
 echo "$NODE_TOKEN" > "$SHARED_FOLDER/tokens/node"
 echo ">>> Node token saved to $SHARED_FOLDER/tokens/node"
