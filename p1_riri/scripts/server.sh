@@ -13,4 +13,10 @@ mkdir -p ~/.kube
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 sudo chown $(id -u):$(id -g) ~/.kube/config
 
-echo -e "\n===== K3s 7 Kubectl installation complete in Server VM ====="
+# --- Save node token to .env ---
+NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token)
+SHARED_FOLDER="/home/vagrant/p1"
+echo "$NODE_TOKEN" > "$SHARED_FOLDER/tokens/node"
+echo ">>> Node token saved to $SHARED_FOLDER/tokens/node"
+
+echo -e "===== K3s / Kubectl installation complete in Server VM ====="
