@@ -1,27 +1,31 @@
 Vagrant.configure("2") do |config|
-  
-  # Define first machine (Server)
-  config.vm.define "rchboukiS" do |server|
-    server.vm.box = "generic/ubuntu2310"
-    server.vm.hostname = "rchboukiS"
-    server.vm.network "private_network", ip: "192.168.56.110"
-    server.vm.provider "libvirt" do |vb|
-      vb.memory = "512"
-      vb.cpus = 1
-    end
-    # SSH setup is automatic in Vagrant
-  end
+    # Shared folder for all VMs
+    config.vm.synced_folder "/home/riri/iot/p1_riri", "/home/vagrant/p1", owner: "vagrant", group: "vagrant"
 
-  # Define second machine (ServerWorker)
-  config.vm.define "rchboukiSW" do |worker|
-    worker.vm.box = "generic/ubuntu2310"
-    worker.vm.hostname = "rchboukiSW"
-    worker.vm.network "private_network", ip: "192.168.56.111"
-    worker.vm.provider "libvirt" do |vb|
-      vb.memory = "512"
-      vb.cpus = 1
+    # Define first machine (Server)
+    config.vm.define "rchboukiS" do |server|
+        server.vm.box = "generic/ubuntu2310"
+        server.vm.hostname = "rchboukiS"
+        server.vm.network "private_network", ip: "192.168.56.110"
+        server.vm.provider "libvirt" do |vb|
+            vb.memory = "512"
+            vb.cpus = 1
+        end
+
+        # Provision script for K3s server
+        server.vm.provision "shell", path: "scripts/server.sh"
     end
-  end
+
+    # Define second machine (ServerWorker)
+    config.vm.define "rchboukiSW" do |worker|
+        worker.vm.box = "generic/ubuntu2310"
+        worker.vm.hostname = "rchboukiSW"
+        worker.vm.network "private_network", ip: "192.168.56.111"
+        worker.vm.provider "libvirt" do |vb|
+            vb.memory = "512"
+            vb.cpus = 1
+        end
+    end
 
 end
 
