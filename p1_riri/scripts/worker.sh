@@ -6,7 +6,7 @@ echo "===== Installing K3s in Agent Mode on the worker VM ====="
 # --- Read server IP and node token from shared folder ---
 SHARED_FOLDER="/home/vagrant/p1"
 SERVER_IP="192.168.56.110"
-NODE_TOKEN=$(ssh vagrant@$SERVER_IP "cat $SHARED_FOLDER/tokens/node")
+NODE_TOKEN=$(< "$SHARED_FOLDER/tokens/node")
 
 echo ">>> Using Node Token from $NODE_TOKEN"
 echo ">>> Connecting to K3s server at $SERVER_IP"
