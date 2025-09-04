@@ -1,8 +1,21 @@
 #!/bin/bash
+set -euo pipefail
 
-MASTER_IP="$1"
+echo "===== Installing K3s in Agent Mode on the worker VM ====="
 
-echo "[INFO] Waiting for node-token from controller..."
-while [ ! -f /vagrant_shared/node-token ]; do
-  echo "[INFO] node-token not found yet, sleeping 2s..."
-  sleep 
+# --- Read server IP and node token from shared folder ---
+SHARED_FOLDER="/home/vagrant/p1"
+SERVER_IP="192.168.56.110"
+K3S_TOKEN=$(< "$SHARED_FOLDER/tokens/node")
+
+echo ">>> Using Node Token from $K3S_TOKEN"
+echo ">>> Connecting to K3s server at $SERVER_IP"
+
+echo ">>> Installing K3s agent (non-blocking)..."
+curl -sfL https://get.k3s.io | K3S_URL=https://$SERVER_IP:6443 K3S_TOKEN=$K3S_TOKEN sh -
+
+echo ">>> Starting K3s agent service..."
+sudo systemctl enable k3s-agent
+sudo systemctl start k3s-agent
+
+echo -e "===== K3s / Kubectl installation complete on Worker VM ====="
