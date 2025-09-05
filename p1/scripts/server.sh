@@ -11,13 +11,7 @@ echo ">>> Installing K3s..."
 curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - \
     server --node-ip "$PRIVATE_IP" --advertise-address "$PRIVATE_IP" --tls-san "$PRIVATE_IP"
 
-# # --- Configure kubeconfig for current user ---
-# echo ">>> Configuring kubectl..."
-# mkdir -p ~/.kube
-# sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-# sudo chown $(id -u):$(id -g) ~/.kube/config
-
-# --- Save node token to .env ---
+# --- Save node token to shared folder ---
 NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token)
 echo "$NODE_TOKEN" > "$SHARED_FOLDER/tokens/node"
 echo ">>> Node token saved to $SHARED_FOLDER/tokens/node"
