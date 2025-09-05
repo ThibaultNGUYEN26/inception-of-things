@@ -2,7 +2,6 @@
 set -euo pipefail
 
 echo "===== K3s Cluster Health Check ====="
-echo
 
 # 1. Nodes
 echo ">>> Nodes:"
