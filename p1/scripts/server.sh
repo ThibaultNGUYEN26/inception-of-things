@@ -13,7 +13,7 @@ curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - \
 
 # --- Save node token to shared folder ---
 NODE_TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token)
-echo "$NODE_TOKEN" > "$SHARED_FOLDER/tokens/node"
-echo ">>> Node token saved to $SHARED_FOLDER/tokens/node"
+echo "$NODE_TOKEN" > "$SHARED_FOLDER/confs/node"
+echo ">>> Node token saved to $SHARED_FOLDER/confs/node"
 
 echo -e "===== K3s / Kubectl installation complete in Server VM ====="
