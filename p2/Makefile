@@ -20,3 +20,6 @@ destroy:
 ssh-server:
 	$(VAGRANT_CMD) ssh rchboukiS
 
+
+# clean scripts and maybe display commands
+# add curls in a script to show apps

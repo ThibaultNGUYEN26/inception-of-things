@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo "===== Applying applications... ====="
-cd /home/vagrant/p2/k3s_apps
+cd /home/vagrant/p2/confs
 kubectl apply -f app1/
 kubectl apply -f app2/
 kubectl apply -f app3/
