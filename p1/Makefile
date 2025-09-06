@@ -2,32 +2,57 @@
 VAGRANT_CMD = vagrant
 PROVIDER = libvirt
 
+# Colors
+BOLD    = \033[1m
+GREEN   = \033[32m
+CYAN    = \033[36m
+YELLOW  = \033[33m
+EOC     = \033[0m
+
 up:
-	$(VAGRANT_CMD) up rchboukiS --provider=$(PROVIDER)
-	$(VAGRANT_CMD) up thibnguySW --provider=$(PROVIDER)
+	@printf "$(BOLD)$(CYAN)===== Starting VMs =====$(EOC)\n"
+	@printf "$(GREEN)>>> Bringing up server VM (rchboukiS)...$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) up rchboukiS --provider=$(PROVIDER)\n"
+	@$(VAGRANT_CMD) up rchboukiS --provider=$(PROVIDER)
+	@printf "$(GREEN)>>> Bringing up worker VM (thibnguySW)...$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) up thibnguySW --provider=$(PROVIDER)\n"
+	@$(VAGRANT_CMD) up thibnguySW --provider=$(PROVIDER)
+	@printf "$(BOLD)$(CYAN)===== VMs are up and running =====$(EOC)\n\n"
 
 status:
-	$(VAGRANT_CMD) status
+	@printf "$(BOLD)$(CYAN)===== Checking VM Status =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) status\n"
+	@$(VAGRANT_CMD) status
 
 stop:
-	$(VAGRANT_CMD) halt
+	@printf "$(BOLD)$(CYAN)===== Stopping all VMs =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) halt\n"
+	@$(VAGRANT_CMD) halt
 
 reload:
-	$(VAGRANT_CMD) reload
+	@printf "$(BOLD)$(CYAN)===== Reloading VMs =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) reload\n"
+	@$(VAGRANT_CMD) reload
 
 destroy:
-	$(VAGRANT_CMD) destroy -f
+	@printf "$(BOLD)$(CYAN)===== Destroying VMs =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) destroy -f$(EOC)\n"
+	@$(VAGRANT_CMD) destroy -f
+	@printf "$(GREEN)>>> Clearing stored node token...$(EOC)\n"
+	@> confs/node
+	@printf "$(BOLD)$(CYAN)===== VMs destroyed and node token cleared =====$(EOC)\n\n"
 
 ssh-server:
-	$(VAGRANT_CMD) ssh rchboukiS
+	@printf "$(BOLD)$(CYAN)===== Connecting to Server VM (rchboukiS) =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) ssh rchboukiS\n"
+	@$(VAGRANT_CMD) ssh rchboukiS
 
 ssh-worker:
-	$(VAGRANT_CMD) ssh thibnguySW
+	@printf "$(BOLD)$(CYAN)===== Connecting to Worker VM (thibnguySW) =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) ssh thibnguySW\n"
+	@$(VAGRANT_CMD) ssh thibnguySW
 
-
-# Put comments in Makefile
-# check 644 in k3s installation
-# ip of worker in 'kubectl get nodes -o wide (in server)' doesnt show 111
-# investigate why kubectl get nodes doesn't work in worker
-# maybe create .env (optional) -> # config.vm.synced_folder "/home/${USER}/iot/p1", "/home/vagrant/p1",
-# clean scripts and maybe display commands
+kubectl:
+	@printf "$(BOLD)$(CYAN)===== Check the machine configuration =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) kubectl get nodes -o wide\n"
+	@kubectl get nodes -o wide
