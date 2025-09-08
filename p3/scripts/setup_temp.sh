@@ -19,6 +19,9 @@ kubectl get pods -n argocd
 # create ingress.yml
 kubectl apply -f ingress.yml -n argocd
 
+# Connect by port forwarding
+kubectl port-forward svc/argocd-server -n argocd 8443:443
+
 # Deploy App using argocd
 kubectl create namespace dev
 kubectl apply -f confs/app.yml -n argocd
@@ -29,6 +32,7 @@ kubectl get all -n dev
 # Check app is deployed by argo cd
 argocd app list
 kubectl get ingress -n dev # if no ressources -> argocd app sync app
+
 
 # check it works with correct version
 curl http://localhost:8080/app
