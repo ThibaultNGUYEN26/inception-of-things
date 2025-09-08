@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
     config.vm.box = "generic/ubuntu2004"
     # Shared folder for all VMs
-    config.vm.synced_folder "/home/riri/iot/p2", "/home/vagrant/p2",
+    config.vm.synced_folder File.dirname(__FILE__), "/home/vagrant/p2",
         type: "nfs", mount_options: ['vers=3', 'tcp']
 
     # Define Server machine
@@ -17,4 +17,3 @@ Vagrant.configure("2") do |config|
         server.vm.provision "shell", path: "scripts/server.sh"
     end
 end
-
