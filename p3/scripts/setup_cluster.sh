@@ -1,65 +1,42 @@
-#!/bin/bash
-set -euo pipefail
+# create cluster
+k3d cluster create my-cluster --api-port 6443 -p 8888:80@loadbalancer -p 32443:32443@loadbalancer --agents 2
 
-echo -e "===== Creating cluster using k3d =====\n"
-k3d cluster create argocd \
-  --servers 1 \
-  --agents 1 \
-  --servers-memory 4g \
-  --agents-memory 4g \
-  --port "8888:30080@loadbalancer"
+# check cluster info
+kubectl cluster-info
 
-
-echo -e "\n===== Check kubeconfig after creation =====\n"
-export KUBECONFIG="$HOME/.kube/config"
-
-echo -e "\n===== Checking cluster info =====\n"
-echo "$(kubectl cluster-info)"
-
-echo -e "\n===== Checking nodes =====\n"
-echo "$(kubectl get nodes)"
-
-echo -e "\n===== Checking pods =====\n"
-echo "$(kubectl get pods -A)"
-
-echo -e "\n===== Creating Namespaces: Argo CD & dev... =====\n"
+# install argo cd (maybe get newer version)
 kubectl create namespace argocd
-kubectl create namespace dev
-echo "$(kubectl get namespace)"
-
-echo -e "\n===== Installing Argo CD & Argo CD CLI... =====\n"
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-echo "$(argocd version)"
 
-echo -e "\n===== Check all Argo CD pods are running... =====\n"
+# install argo crds
+kubectl apply -k https://github.com/argoproj/argo-cd/manifests/crds\?ref\=stable
+
+# check all pods are running right > if false do not move on
 kubectl get pods -n argocd
 
-echo -e "\n===== Access argo cd locally by exposing the Port... =====\n"
-kubectl patch svc argocd  -server -n argocd -p '{"spec": {"type": "NodePort", "ports": [{"port": 80,"targetPort": 8080,"nodePort": 30080,"name": "http"},{"port": 443,"targetPort": 8080,"nodePort": 30443,"name": "https"}]}}'
+# create ingress.yml
+kubectl apply -f confs/ingress.yml -n argocd
 
-echo -e "\n===== Check health of Argo CD server... =====\n"
-curl -v http://localhost:8888/healthz
-echo -e "\n===== Check content of Argo CD server... =====\n"
-curl -vk http://localhost:8888/healthz
+# Connect by port forwarding
+kubectl port-forward svc/argocd-server -n argocd 8443:443
 
-echo -e "\n===== Deploy Argo CD application... =====\n"
-kubectl apply -f confs/app.yml
+# Deploy App using argocd
+kubectl create namespace dev
+kubectl apply -f confs/app.yml -n argocd
 
-echo -e "\n===== Check application was deployed... =====\n"
-kubectl get applications -n argocd
-kubectl describe application app -n argocd
+# Check state
+kubectl get all -n dev
 
-# echo -e "\n===== Install Argo CD CLI... =====\n"
-# curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-# chmod +x argocd
-# sudo mv argocd /usr/local/bin/                                              
-
-echo -e "\n===== Logging into Argo CD Server... =====\n"
+# Log in argocd (doesn't work rn)
 PASSWORD=$(< kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo)
 argocd login localhost:8888 --username admin --password $PASSWORD --insecure
 kubectl get svc -n argocd argocd-server
-# argocd login localhost:8888 --username admin --password $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) --insecure
-
+# Check app is deployed by argo cd
 argocd app list
-argocd app sync app
-argocd app get app
+
+kubectl get ingress -n dev
+
+# check it works with correct version
+curl http://localhost:8080/app
+
+# change version and check again
