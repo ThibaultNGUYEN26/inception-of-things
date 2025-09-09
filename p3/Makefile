@@ -49,14 +49,31 @@ ingress:
 	@$(KUBECTL_CMD) apply -f confs/app.yml -n argocd
 	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n argocd
 # 	@$(KUBECTL_CMD) -n argocd patch secret argocd-secret -p '{"stringData":  {"admin.password": "iot", "admin.passwordMtime": "'$(date +%FT%T%Z)'"}}'
-	@$(KUBECTL_CMD) get pods -n argocd -w
+	@$(KUBECTL_CMD) get pods -n argocd
 	@$(KUBECTL_CMD) get svc -n argocd argocd-server
 # 	@$(KUBECTL_CMD) get ingress -n dev
 
 
+# No port forwarding needed
+ui:
+	@$(KUBECTL_CMD)kubectl patch deployment argocd-server -n argocd --type='json' -p='[
+	{
+		"op": "add",
+		"path": "/spec/template/spec/containers/0/args/-",
+		"value": "--rootpath=/argocd"
+	},
+	{
+		"op": "add",
+		"path": "/spec/template/spec/containers/0/args/-",
+		"value": "--insecure"
+	}
+	]'
+	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n argocd
+
+
 # Run Port-Forwarding to login to argocd
 port-forward:
-	@$(KUBECTL_CMD) port-forward svc/argocd-server -n argocd 8443:443
+	kubectl port-forward svc/argocd-server -n argocd 8443:443
 
 
 # Access the deployed application
