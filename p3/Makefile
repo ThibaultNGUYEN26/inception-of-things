@@ -25,8 +25,8 @@ create:
 
 # Create namespaces (idempotent)
 namespace:
-	@$(KUBECTL_CMD) create namespace $(ARGO_NS) --dry-run=client -o yaml | $(KUBECTL_CMD) apply -f -
-	@$(KUBECTL_CMD) create namespace $(DEV_NS) --dry-run=client -o yaml | $(KUBECTL_CMD) apply -f -
+	@$(KUBECTL_CMD) create namespace $(ARGO_NS)
+	@$(KUBECTL_CMD) create namespace $(DEV_NS)
 	@$(KUBECTL_CMD) get namespaces
 
 
@@ -44,11 +44,14 @@ check-pods:
 
 
 # Configure ingress, service and application
-confs:
+ingress:
 	@$(KUBECTL_CMD) apply -f confs/ingress.yml -n argocd
 	@$(KUBECTL_CMD) apply -f confs/app.yml -n argocd
-	@$(KUBECTL_CMD) get ingress -n dev
+	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n argocd
+# 	@$(KUBECTL_CMD) -n argocd patch secret argocd-secret -p '{"stringData":  {"admin.password": "iot", "admin.passwordMtime": "'$(date +%FT%T%Z)'"}}'
+	@$(KUBECTL_CMD) get pods -n argocd -w
 	@$(KUBECTL_CMD) get svc -n argocd argocd-server
+# 	@$(KUBECTL_CMD) get ingress -n dev
 
 
 # Run Port-Forwarding to login to argocd
