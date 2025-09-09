@@ -24,7 +24,7 @@ status:
 	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) status\n"
 	@$(VAGRANT_CMD) status
 
-stop:
+halt:
 	@printf "$(BOLD)$(CYAN)===== Stopping all VMs =====$(EOC)\n"
 	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) halt\n"
 	@$(VAGRANT_CMD) halt
@@ -56,3 +56,7 @@ kubectl:
 	@printf "$(BOLD)$(CYAN)===== Check the machine configuration =====$(EOC)\n"
 	@printf "$(YELLOW)Command:$(EOC) kubectl get nodes -o wide\n"
 	@kubectl get nodes -o wide
+
+re: destroy up
+
+.PHONY: up status halt reload destroy ssh-server ssh-worker kubectl re

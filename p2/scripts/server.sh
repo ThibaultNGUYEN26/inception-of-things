@@ -22,3 +22,14 @@ curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - \
     --tls-san "$PRIVATE_IP"
 
 echo -e "\n${BOLD}${CYAN}===== K3s / Kubectl installation complete in Server VM =====${EOC}\n"
+
+# --- Configure local DNS (/etc/hosts) for app domains ---
+echo -e "${GREEN}>>> Configuring /etc/hosts for local app domains...${EOC}"
+HOSTS_LINE="$PRIVATE_IP app1.com app2.com app3.com"
+if grep -q "\bapp1\.com\b" /etc/hosts; then
+    echo -e "${YELLOW}Entries for app domains already exist. Skipping.${EOC}"
+else
+    echo "$HOSTS_LINE" >> /etc/hosts
+    echo -e "${GREEN}Added: ${HOSTS_LINE}${EOC}"
+fi
+echo ""
