@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inception of Things</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="game-container">
+            <h1 class="title">Tic Tac Toe</h1>
+            <div class="grid-selector">
+                <label for="gridSize">Grid Size:</label>
+                <select id="gridSize" onchange="changeGridSize()">
+                    <option value="3">3x3</option>
+                    <option value="4">4x4</option>
+                    <option value="5">5x5</option>
+                    <option value="6">6x6 (5 in a row)</option>
+                    <option value="7">7x7 (5 in a row)</option>
+                    <option value="8">8x8 (5 in a row)</option>
+                    <option value="9">9x9 (5 in a row)</option>
+                    <option value="10">10x10 (5 in a row)</option>
+                </select>
+            </div>
+            <div class="game-info">
+                <div class="current-player">Player X's Turn</div>
+                <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+            </div>
+            <div class="game-board" id="gameBoard">
+            </div>
+            <div class="game-status" id="gameStatus"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

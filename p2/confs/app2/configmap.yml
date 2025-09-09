@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app2-index
+data:
+  index.html: |
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>app2</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        h1 { color: #2563eb; }
+      </style>
+    </head>
+    <body>
+      <h1>app2 Works!</h1>
+      <p>Served by Apache (httpd:alpine).</p>
+    </body>
+    </html>
+

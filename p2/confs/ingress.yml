@@ -35,3 +35,13 @@ spec:
             name: app3
             port:
               number: 80
+  # Hostless catch-all rule to ensure direct IP or unknown hosts go to app3
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: app3
+            port:
+              number: 80

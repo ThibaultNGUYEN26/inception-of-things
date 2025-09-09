@@ -24,10 +24,10 @@ echo -e "${YELLOW}Command:${EOC} kubectl apply -f app2/"
 kubectl apply -f app2/
 echo "-----------------------------------"
 
-# App3
+# App3 (via Kustomize to include static files)
 echo -e "\n${GREEN}>>> Applying App3${EOC}"
-echo -e "${YELLOW}Command:${EOC} kubectl apply -f app3/"
-kubectl apply -f app3/
+echo -e "${YELLOW}Command:${EOC} kubectl apply -k app3/"
+kubectl apply -k app3/
 echo "-----------------------------------"
 
 # Ingress

@@ -15,6 +15,13 @@ spec:
       containers:
       - name: app3
         image: python:3.11-slim
-        command: ["python", "-m", "http.server", "80"]
+        command: ["python", "-m", "http.server", "80", "--directory", "/usr/share/www"]
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/www
+      volumes:
+      - name: html
+        configMap:
+          name: app3-html

@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yml
+  - service.yml
+
+configMapGenerator:
+  - name: app3-html
+    files:
+      - static/index.html
+      - static/styles.css
+      - static/script.js
+
+generatorOptions:
+  disableNameSuffixHash: true
