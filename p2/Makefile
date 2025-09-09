@@ -11,6 +11,7 @@ EOC     = \033[0m
 
 up:
 	@printf "$(BOLD)$(CYAN)===== Starting VMs =====$(EOC)\n"
+	@$(MAKE) hosts
 	@printf "$(GREEN)>>> Bringing up server VM (rchboukiS)...$(EOC)\n"
 	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) up rchboukiS --provider=$(PROVIDER)\n"
 	@$(VAGRANT_CMD) up rchboukiS --provider=$(PROVIDER)
@@ -21,7 +22,7 @@ status:
 	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) status\n"
 	@$(VAGRANT_CMD) status
 
-stop:
+halt:
 	@printf "$(BOLD)$(CYAN)===== Stopping all VMs =====$(EOC)\n"
 	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) halt\n"
 	@$(VAGRANT_CMD) halt
@@ -30,6 +31,11 @@ reload:
 	@printf "$(BOLD)$(CYAN)===== Reloading VMs =====$(EOC)\n"
 	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) reload\n"
 	@$(VAGRANT_CMD) reload
+
+hosts:
+	@printf "$(BOLD)$(CYAN)===== Ensuring local DNS mapping =====$(EOC)\n"
+	@printf "$(YELLOW)Command:$(EOC) bash scripts/configure_hosts.sh\n"
+	@bash scripts/configure_hosts.sh
 
 destroy:
 	@printf "$(BOLD)$(CYAN)===== Destroying VMs =====$(EOC)\n"
@@ -41,3 +47,7 @@ ssh-server:
 	@printf "$(BOLD)$(CYAN)===== Connecting to Server VM (rchboukiS) =====$(EOC)\n"
 	@printf "$(YELLOW)Command:$(EOC) $(VAGRANT_CMD) ssh rchboukiS\n"
 	@$(VAGRANT_CMD) ssh rchboukiS
+
+re: destroy up
+
+.PHONY: up status stop reload destroy ssh-server re
