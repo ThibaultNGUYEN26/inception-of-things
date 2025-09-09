@@ -47,12 +47,16 @@ check-pods:
 ingress:
 	@$(KUBECTL_CMD) apply -f confs/ingress.yml -n argocd
 	@$(KUBECTL_CMD) apply -f confs/app.yml -n argocd
-	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n argocd
+
+
+# Check configurations
+check:
 	@$(KUBECTL_CMD) get pods -n argocd
 	@$(KUBECTL_CMD) get svc -n argocd argocd-server
+	@$(KUBECTL_CMD) get ingress -n dev
 
 
-# No port forwarding needed
+# Display Argo CD UI
 ui:
 	@$(KUBECTL_CMD) patch deployment argocd-server -n $(ARGO_NS) --type='json' -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--rootpath=/argocd"},{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--insecure"}]'
 	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n $(ARGO_NS)
