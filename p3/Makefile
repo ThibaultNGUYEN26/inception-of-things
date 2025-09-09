@@ -48,35 +48,46 @@ ingress:
 	@$(KUBECTL_CMD) apply -f confs/ingress.yml -n argocd
 	@$(KUBECTL_CMD) apply -f confs/app.yml -n argocd
 	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n argocd
-# 	@$(KUBECTL_CMD) -n argocd patch secret argocd-secret -p '{"stringData":  {"admin.password": "iot", "admin.passwordMtime": "'$(date +%FT%T%Z)'"}}'
 	@$(KUBECTL_CMD) get pods -n argocd
 	@$(KUBECTL_CMD) get svc -n argocd argocd-server
-# 	@$(KUBECTL_CMD) get ingress -n dev
 
 
 # No port forwarding needed
 ui:
-	@$(KUBECTL_CMD)kubectl patch deployment argocd-server -n argocd --type='json' -p='[
-	{
-		"op": "add",
-		"path": "/spec/template/spec/containers/0/args/-",
-		"value": "--rootpath=/argocd"
-	},
-	{
-		"op": "add",
-		"path": "/spec/template/spec/containers/0/args/-",
-		"value": "--insecure"
-	}
-	]'
-	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n argocd
+	@$(KUBECTL_CMD) patch deployment argocd-server -n $(ARGO_NS) --type='json' -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--rootpath=/argocd"},{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--insecure"}]'
+	@$(KUBECTL_CMD) rollout restart deployment argocd-server -n $(ARGO_NS)
 
 
-# Run Port-Forwarding to login to argocd
-port-forward:
-	kubectl port-forward svc/argocd-server -n argocd 8443:443
+# Get the default Argo CD admin password
+get-admin-password:
+	@$(KUBECTL_CMD) -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
+
+
+# Set a new Argo CD admin password
+# Usage: make set-admin-password PASSWORD=<newpassword>
+set-admin-password:
+	@if [ -z "$(PASSWORD)" ]; then echo "Usage: make set-admin-password PASSWORD=<newpassword>"; exit 1; fi
+	@HASH=$$( if command -v htpasswd >/dev/null 2>&1; then \
+				htpasswd -nbBC 10 "" "$(PASSWORD)" | tr -d ':\n' | sed -E 's/^\$\$2[by]/\$\$2a/'; \
+			elif openssl passwd -help 2>&1 | grep -q bcrypt; then \
+				openssl passwd -bcrypt "$(PASSWORD)" | sed -E 's/^\$\$2[by]/\$\$2a/'; \
+			elif command -v docker >/dev/null 2>&1; then \
+				docker run --rm -e ARGO_PWD="$(PASSWORD)" alpine:3 sh -lc 'apk add --no-cache apache2-utils >/dev/null && htpasswd -nbBC 10 "" "$$ARGO_PWD" | tr -d ":\n" | sed -E "s/^\$\$2[by]/\$\$2a/"'; \
+			else \
+				echo ""; \
+			fi ); \
+		if [ -z "$$HASH" ]; then echo "Cannot generate bcrypt hash. Install apache2-utils (htpasswd) or OpenSSL with bcrypt support."; exit 1; fi; \
+		echo "Patching argocd-secret with new admin password..."; \
+		mkdir -p "$(CURDIR)/.tmp"; \
+		PATCH_FILE="$(CURDIR)/.tmp/argocd-secret-patch.json"; \
+		/usr/bin/env printf '{"stringData":{"admin.password":"%s","admin.passwordMtime":"%s"}}' "$$HASH" "$$(/usr/bin/env date -u +%FT%TZ)" > "$$PATCH_FILE"; \
+		$(KUBECTL_CMD) -n $(ARGO_NS) patch secret argocd-secret --type merge -p "$$(/usr/bin/env cat "$$PATCH_FILE")"; \
+		rm -f "$$PATCH_FILE"; \
+		echo "Restarting argocd-server..."; \
+		$(KUBECTL_CMD) -n $(ARGO_NS) rollout restart deploy/argocd-server; \
+		echo "Done. Login with username 'admin' and the new password."
 
 
 # Access the deployed application
 app:
 	@curl http://localhost:8888/app
-
