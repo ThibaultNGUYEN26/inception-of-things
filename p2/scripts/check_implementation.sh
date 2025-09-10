@@ -16,23 +16,28 @@ echo -e "${YELLOW}Command:${EOC} kubectl get nodes"
 kubectl get nodes
 echo "-----------------------------------"
 
-# 2. All Pods
+# 2. All states
+echo -e "\n${GREEN}>>> [1/4] Checking all states are ready${EOC}"
+echo -e "${YELLOW}Command:${EOC} kubectl get all"
+kubectl get all
+echo "-----------------------------------"
+
+# 3. All Pods
 echo -e "\n${GREEN}>>> [2/4] Checking all pods across namespaces${EOC}"
 echo -e "${YELLOW}Command:${EOC} kubectl get pods -A"
 kubectl get pods -A
 echo "-----------------------------------"
 
-# 3. All Services
+# 4. All Services
 echo -e "\n${GREEN}>>> [3/4] Checking services${EOC}"
 echo -e "${YELLOW}Command:${EOC} kubectl get svc"
 kubectl get svc
 echo "-----------------------------------"
 
-# 4. Ingress
+# 5. Ingress
 echo -e "\n${GREEN}>>> [4/4] Checking ingress resources${EOC}"
 echo -e "${YELLOW}Command:${EOC} kubectl get ingress"
 kubectl get ingress
-
 echo -e "\n${GREEN}>>> [4/4b] Detailed ingress information${EOC}"
 echo -e "${YELLOW}Command:${EOC} kubectl describe ingress apps-ingress"
 kubectl describe ingress apps-ingress
