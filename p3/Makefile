@@ -52,7 +52,8 @@ ingress:
 
 # Check configurations
 check:
-	@$(KUBECTL_CMD) get pods -n argocd
+	@$(KUBECTL_CMD) get pods -n $(ARGO_NS)
+	@$(KUBECTL_CMD) get pods -n $(DEV)
 	@$(KUBECTL_CMD) get svc -n argocd argocd-server
 	@$(KUBECTL_CMD) get ingress -n dev
 
