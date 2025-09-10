@@ -28,7 +28,6 @@ echo "$(docker compose version)"
 
 echo -e "\n===== Adding user to Docker group... ====="
 sudo usermod -aG docker $USER
-echo "⚠️ Please log out and back in (or run: newgrp docker) to apply group changes."
 
 echo -e "\n===== Installing kubectl... ====="
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"

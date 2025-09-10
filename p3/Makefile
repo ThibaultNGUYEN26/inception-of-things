@@ -3,7 +3,6 @@ KUBECTL_CMD = kubectl
 CLUSTER_NAME = my-cluster
 ARGO_NS = argocd
 DEV_NS = dev
-GIT_FIE = /home/rchbouki/sgoinfre/inception_of_things/thibnguy
 
 # Install all the necessary packages and tools
 install:
@@ -16,6 +15,8 @@ uninstall:
 	@$(K3D_CMD) cluster delete $(CLUSTER_NAME)
 	@sudo chmod +x ./scripts/uninstall_tools.sh
 	@./scripts/uninstall_tools.sh
+	@rm ./kubectl
+	@rm ./kubectl.sha256
 
 
 # Create the k3d cluster
